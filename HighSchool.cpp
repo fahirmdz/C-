@@ -2,15 +2,7 @@
 #include <cstring>
 #include <memory>
 using namespace std;
-/*
-1. BROJ I VRSTA PARAMETARA MORAJU BITI IDENTICNI KAO U PRIMJERIMA. U SUPROTNOM SE RAD NEĆE BODOVATI
-2. STAVITE KOMENTAR NA DIJELOVE CODE-A KOJE NE BUDETE IMPLEMENTIRALI
-3. KREIRAJTE .DOC FAJL SA VAŠIM BROJEM INDEKSA ( NPR. IB160061.DOC BEZ IMENA I PREZIMENA), TE NA KRAJU ISPITA U NJEGA KOPIRAJTE RJEŠENJA VAŠIH ZADATAKA. NE PREDAVATI .TXT ILI .CPP FAJLOVE
-4. TOKOM IZRADE ISPITA NIJE DOZVOLJENO KORIŠTENJE HELP-A
-5. TOKOM IZRADE ISPITA MOGU BITI POKRENUTA SAMO TRI PROGRAMA: PDF READER (ISPITNI ZADACI), MS VISUAL STUDIO, MS WORD (U KOJI ĆETE KOPIRATI VAŠA RJEŠENJA)
-6. BEZ OBZIRA NA TO DA LI SU ISPITNI ZADACI URAĐENI, SVI STUDENTI KOJI SU PRISTUPILI ISPITU MORAJU PREDATI SVOJ RAD
-*/
-//narednu liniju code-a ignorisite, osim u slucaju da vam bude predstavljala smetnje u radu
+
 #pragma warning(disable:4996)
 
 char *crt = "\n-------------------------------------------\n";
@@ -204,13 +196,6 @@ struct Kandidat {
 		return true;
 	}
 };
-/*
-napisati rekurzivnu funkciju koja ce vratiti pokazivac na kandidata sa najvecom ocjenom na predmetu koji je
-proslijedjen kao parametar. ukoliko je vise kandidata ostvarilo istu ocjenu, funkcija treba da vrati onog kandidata
-koji je prvi evidentirao tu ocjenu (ako je isto vrijeme evidentiranja, onda funkcija vraca kandidata koji je prvi u nizu).
-u slucaju da niti jedan kandidat nije evidentirao trazeni predmet funkcija vraca nullptr. u nastavku je prikazan primjer
-poziva rekurzivne funkcije, a ostale parametre dodajte po potrebi.
-*/
 Kandidat *rekNajboljaOcjena(Kandidat *k, int brk, const char *nazivPr, Kandidat *t, int i=0,int j=0,int z=0,int k2=0,int k3=0) {
 	if (i == brk)
 		return t;
@@ -292,11 +277,6 @@ void main()
 	if (prijave2017[1].DodajPredmet(DRUGI, Engleski))
 		cout << "Predmet 8 uspjesno dodan!" << crt;
 
-	/*
-	koristeci Lambda izraz kreirati funkciju koja ce vratiti uspjeh kandidata koji je ostvario najveci prosjek
-	(na nivou razreda, a ne ukupni prosjek). ukoliko vise kandidata ima isti prosjek funkcija vraca uspjeh (najboljeg razreda)
-	prvog pronadjenog kandidata
-	*/
 	auto najboljiUspjeh = [prijave2017,brojKandidata]() {
 		float **usp = new float*[brojKandidata];
 		for (int i = 0; i < brojKandidata; i++)
