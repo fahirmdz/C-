@@ -103,14 +103,7 @@ void PromijeniOdgovor(Pitanje *pitanja[],int trp) {
 		if (flag)break;
 	}
 }
-/*PITANJA SE MOGU MIJENJATI SAMO AKO KVIZ NIJE URADJEN!*/
-/*
-Unesite odgovor ili dio odgovora za pretragu -> ac
-Odgovor Bihac pronadjen u pitanju: U kojem gradu se nalazi FIT?
-Da li je ovo odgovor koji biste zeljeli promijeniti (d/n) -> d
-Unesite novi odgovor -> Zenica
-Da li zelite postaviti novi odgovor kao tacan (d/n) -> d
-*/
+
 int *PokreniKviz(Pitanje *ispitPRII[], int maxPitanja) {
 	int *odgs = new int[maxPitanja];
 	for (int i = 0; i < maxPitanja; i++) {
@@ -182,8 +175,8 @@ void main() {
 			cin.ignore();
 		}
 		else if (izbor == 3) {
-			/*ONEMOGUCITI VISESTRUKO POKRETANJE KVIZA!*/
-			if (trenutnoPitanja > 3) {/*KVIZ MORA IMAT NAJMANJE 3 PITANJA*/
+			
+			if (trenutnoPitanja > 3) {
 				if (radjen == 0) {
 					odgovoriNaPitanja = PokreniKviz(ispitPRII, trenutnoPitanja);
 					radjen = 1;
@@ -191,44 +184,17 @@ void main() {
 				else cout << "Kviz je vec radjen..\n";
 			}
 			else cout << "Kviz mora imati vise od 3 pitanja  da bi se pokrenuo..\n";
-			/*
-			-------------------------------
-			1. U kojem gradu se nalazi FIT?
-			-------------------------------
-			1. Mostar
-			2. Sarajevo
-			3. Tuzla
-			4. Zenica
-			-------------------------------
-			Vas odgovor -> 1
-			-------------------------------
-			2. Naredno pitanje...
-			*/
+			
 			cin.ignore();
 		}
 		else if (izbor == 4) {
 			if (radjen == 1)
-				/*REZULTATI SE PRIKAZUJU SAMO AKO JE KVIZ URADJEN*/
 				PrikaziRezultat(ispitPRII, odgovoriNaPitanja, trenutnoPitanja);
 			cin.ignore();
-			/*
-			-------------------------------
-			REZULTATI
-			-------------------------------
-			1. Pitanje -> TACNO
-			2. Pitanje -> NETACNO
-			3. Pitanje -> NETACNO
-			...
-			-------------------------------
-			USPJEH: 10/20 BODOVA (50%)
-			-------------------------------
-			*/
+			
 		}
 
 	} while (izbor != 5);
-
-
-	/*oslobađa zauzetu memoriju*/
 	Dealociraj(ispitPRII, trenutnoPitanja);
 	delete[] odgovoriNaPitanja; odgovoriNaPitanja = nullptr;
 }
