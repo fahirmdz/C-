@@ -4,15 +4,7 @@
 #include <cstring>
 #include <tuple>
 using namespace std;
-/*
-1. BROJ I VRSTA PARAMETARA MORAJU BITI IDENTICNI KAO U PRIMJERIMA. U SUPROTNOM SE RAD NECE BODOVATI
-2. STAVITE KOMENTAR NA DIJELOVE CODE-A KOJE NE BUDETE IMPLEMENTIRALI
-3. KREIRAJTE .DOC FAJL SA VAŠIM BROJEM INDEKSA ( NPR. IB160061.DOC BEZ IMENA I PREZIMENA), TE NA KRAJU ISPITA U NJEGA KOPIRAJTE RJEŠENJA VAŠIH ZADATAKA. NE PREDAVATI .TXT ILI .CPP FAJLOVE
-4. TOKOM IZRADE ISPITA NIJE DOZVOLJENO KORIŠTENJE HELP-A
-5. TOKOM IZRADE ISPITA MOGU BITI POKRENUTA SAMO TRI PROGRAMA: PDF READER (ISPITNI ZADACI), MS VISUAL STUDIO, MS WORD (U KOJI CETE KOPIRATI VAŠA RJEŠENJA)
-6. BEZ OBZIRA NA TO DA LI SU ISPITNI ZADACI URAÐENI, SVI STUDENTI KOJI SU PRISTUPILI ISPITU MORAJU PREDATI SVOJ RAD
-*/
-//narednu liniju code-a ignorisite, osim u slucaju da vam bude predstavljala smetnje u radu
+
 #pragma warning(disable:4996)
 
 
@@ -28,29 +20,27 @@ struct Datum {
 		_godina = new int(g);
 	}
 	void Ispis() { cout << *_dan << "/" << *_mjesec << "/" << *_godina << endl; }
-	void Dealociraj() { delete _dan; delete _mjesec; delete _godina; }
-	int dani() { return (*_godina * 365 + *_mjesec * 30 + *_dan); };
+	void Dealociraj() { if(_dan!=nullptr)delete _dan;
+	if(_mjesec!=nullptr)delete _mjesec;
+	if(_godina!=nullptr)delete _godina;
+	_dan = _godina = _mjesec = nullptr;
+	}
+	int dani() { return *_dan + *_mjesec * 30 + *_godina * 365; }
 };
 int compareDate(Datum d1, Datum d2) {
-	if (*d1._godina > *d2._godina)return 1;
-	else if (*d1._godina < *d2._godina)return -1;
-	else if (*d1._mjesec > *d2._mjesec)return 1;
-	else if (*d1._mjesec < *d2._mjesec)return -1;
-	else if (*d1._dan > *d2._dan)return 1;
-	else if (*d1._dan < *d2._dan)return -1;
+	if (*d1._godina > *d2._godina)
+		return 1;
+	else if (*d1._godina < *d2._godina)
+		return -1;
+	else if (*d1._mjesec > *d2._mjesec)
+		return 1;
+	else if (*d1._mjesec < *d2._mjesec)
+		return -1;
+	else if (*d1._dan > *d2._dan)
+		return 1;
+	else if (*d1._dan < *d2._dan)
+		return -1;
 	else return 0;
-}
-template<class T>
-T *expandArray(T *niz, int brc) {
-	T *temp = new T[brc];
-	for (int i = 0; i < brc; i++)
-		swap(temp[i], niz[i]);
-	delete[] niz; niz = nullptr;
-	niz = new T[brc + 1];
-	for (int i = 0; i < brc; i++)
-		swap(temp[i], niz[i]);
-	delete[] temp; temp = nullptr;
-	return niz;
 }
 struct Aktivnost {
 	unique_ptr<VrstaAktivnosti> _vrsta;
@@ -58,6 +48,8 @@ struct Aktivnost {
 	char * _nazivOpis;
 	int _ocjena; // 1 - 10 
 	void Unos(VrstaAktivnosti vrsta, Datum * datum, int ocjena, const char * nazivOpis) {
+		if (ocjena == NULL || nazivOpis == nullptr || datum==nullptr)
+			return;
 		_vrsta = make_unique<VrstaAktivnosti>(vrsta);
 		_datumIzvrsenja.Unos(*datum->_dan, *datum->_mjesec, *datum->_godina);
 		_ocjena = ocjena;
@@ -66,15 +58,17 @@ struct Aktivnost {
 		strcpy_s(_nazivOpis, size, nazivOpis);
 	}
 	void Ispis() {
-		cout << "Vrsta aktivnosti: " << vrstaAktivnosti[*_vrsta] << "\nOcjena: " << _ocjena << "\nNaziv: " << _nazivOpis << "\nDatum izvrsenja: ";
+		if (_ocjena == NULL || _nazivOpis == nullptr)
+			return;
+		cout << vrstaAktivnosti[*_vrsta] << " " << _ocjena << " " << _nazivOpis;
 		_datumIzvrsenja.Ispis();
 		cout << endl;
 	}
 	void Dealociraj() {
-		_vrsta.reset();
-		_vrsta = nullptr;
 		_datumIzvrsenja.Dealociraj();
-		delete[] _nazivOpis; _nazivOpis = nullptr;
+		if (_nazivOpis != nullptr)
+			delete[] _nazivOpis;
+		_nazivOpis = nullptr;
 	}
 };
 struct KaratePojas {
@@ -89,105 +83,128 @@ struct KaratePojas {
 		_pojas = pojas;
 	}
 	void Dealociraj() {
-		if (_datumPolaganja != nullptr) {
+		if (_datumPolaganja != nullptr)
 			_datumPolaganja->Dealociraj();
-			delete _datumPolaganja;
-			_datumPolaganja = nullptr;
-		}
-		if (_trenutnoIzvrsenihAktivnosti > 0) {
+		_datumPolaganja = nullptr;
+		if (_trenutnoIzvrsenihAktivnosti > 0)
 			for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++)
 				_listaIzvrsenihAktivnosti[i].Dealociraj();
+		if (_listaIzvrsenihAktivnosti != nullptr)
 			delete[] _listaIzvrsenihAktivnosti;
-			_listaIzvrsenihAktivnosti = nullptr;
-		}
+		_listaIzvrsenihAktivnosti = nullptr;
 	}
 	void Ispis() {
-		cout << "Datum polaganja: ";
-		if (_datumPolaganja != nullptr)
-			_datumPolaganja->Ispis();
-		else cout << " *POJAS NIJE POLOZEN*\n";
-		cout << "\nPojas: " << pojas[_pojas] << endl;
+		_datumPolaganja->Ispis();
+		cout << pojas[_pojas] << endl;
 		if (_trenutnoIzvrsenihAktivnosti > 0)
 			for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++)
 				_listaIzvrsenihAktivnosti[i].Ispis();
-	}/*Na osnovu vrijednosti primljenog parametra osigurati dodavanje novoizvrsene aktivnosti za potrebe stjecanja odredjenog pojasa. Broj aktivnosti
-	 nije ogranicen.
-	 Identicna aktivnost se moze dodati jedino u slucaju kada je prethodna (identivna aktivnost po vrsti i datumu izvrsenja) imala ocjenu manju od 6.
-	 Uspjesnom aktivnoscu se smatraju one aktivnosti koje imaju ocjenu vecu od 5, a svaka naredna identicna aktivnost, bez obzira da li je uspjesna ili
-	 ne,
-	 moze biti dodana jedino ako je proslo najmanje 15 dana od izvrsenja prethodne. Onemoguciti dodavanje aktivnosti uspjesno polozenom pojasu.*/
-
+		else
+			cout << "Nema izvrsenih aktivmnosti..\n";
+	}
+	/*Na osnovu vrijednosti primljenog parametra osigurati dodavanje novoizvrsene aktivnosti za potrebe stjecanja odredjenog pojasa. 
+	Broj aktivnosti nije ogranicen.
+	Identicna aktivnost se moze dodati jedino u slucaju kada je prethodna (identivna aktivnost po vrsti i datumu izvrsenja) imala ocjenu manju od 6.
+	Uspjesnom aktivnoscu se smatraju one aktivnosti koje imaju ocjenu vecu od 5, a svaka naredna identicna aktivnost, bez obzira da li je uspjesna ili
+	ne,
+	moze biti dodana jedino ako je proslo najmanje 15 dana od izvrsenja prethodne. Onemoguciti dodavanje aktivnosti uspjesno polozenom pojasu.*/
 	bool DodajIzvrsenuAktivnost(Aktivnost *a) {
-		if (_datumPolaganja != nullptr)return false;
-		if (_trenutnoIzvrsenihAktivnosti > 0) {
-			for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++)
-				if (compareDate(a->_datumIzvrsenja, _listaIzvrsenihAktivnosti[i]._datumIzvrsenja) == 0 && a->_vrsta == _listaIzvrsenihAktivnosti[i]._vrsta)
-					if (a->_ocjena <= _listaIzvrsenihAktivnosti[i]._ocjena)return false;
-			if ((a->_datumIzvrsenja.dani() - _listaIzvrsenihAktivnosti[_trenutnoIzvrsenihAktivnosti - 1]._datumIzvrsenja.dani()) < 15)return false;
-
-			_listaIzvrsenihAktivnosti = expandArray(_listaIzvrsenihAktivnosti, _trenutnoIzvrsenihAktivnosti);
+		if (_datumPolaganja != nullptr) {
+			cout << "Ne mozete dodavati aktivnosti uspjesno polozenom pojasu!\n";
+			return false;
 		}
-		else _listaIzvrsenihAktivnosti = new Aktivnost[_trenutnoIzvrsenihAktivnosti + 1];
+		if (_trenutnoIzvrsenihAktivnosti < 0)
+			return false;
+		if (_trenutnoIzvrsenihAktivnosti > 0) {
+			for (int i = _trenutnoIzvrsenihAktivnosti - 1; i >= 0; i--) {
+				if (*_listaIzvrsenihAktivnosti[i]._vrsta == *a->_vrsta)
+					if (_listaIzvrsenihAktivnosti[i]._ocjena > 5)
+						return false;
+					else if ((a->_datumIzvrsenja.dani() - _listaIzvrsenihAktivnosti[i]._datumIzvrsenja.dani()) < 15)
+						return false;
+					else
+						break;
+			}
+			Aktivnost *temp = new Aktivnost[_trenutnoIzvrsenihAktivnosti];
+			for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++)
+				swap(_listaIzvrsenihAktivnosti[i], temp[i]);
+			delete[] _listaIzvrsenihAktivnosti;
+			_listaIzvrsenihAktivnosti = new Aktivnost[_trenutnoIzvrsenihAktivnosti + 1];
+			for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++)
+				swap(_listaIzvrsenihAktivnosti[i], temp[i]);
+			delete[] temp; temp = nullptr;
+		}
+		else if (_listaIzvrsenihAktivnosti == nullptr)
+			_listaIzvrsenihAktivnosti = new Aktivnost[_trenutnoIzvrsenihAktivnosti + 1];
 		_listaIzvrsenihAktivnosti[_trenutnoIzvrsenihAktivnosti++].Unos(*a->_vrsta, &a->_datumIzvrsenja, a->_ocjena, a->_nazivOpis);
 		return true;
 	}
 	void Sortiraj() {
-		int x = _trenutnoIzvrsenihAktivnosti, iz;
+		if (_trenutnoIzvrsenihAktivnosti <= 0 || _listaIzvrsenihAktivnosti == nullptr)
+			return;
+		int iz, n = _trenutnoIzvrsenihAktivnosti;
 		do {
 			iz = 1;
-			for (int i = 0; i < x - 1; i++) {
-				if (_listaIzvrsenihAktivnosti[i]._ocjena > _listaIzvrsenihAktivnosti[i]._ocjena) {
-					swap(_listaIzvrsenihAktivnosti[i], _listaIzvrsenihAktivnosti[i + 1]);
-					iz = 0;
-				}
-			}
-			x -= 1;
-		} while (x > 1 && iz == 0);
+			for (int i = 0; i < n - 1; i++) {
+				if(_listaIzvrsenihAktivnosti[i]._ocjena!=NULL && _listaIzvrsenihAktivnosti[i+1]._ocjena!=NULL)
+					if (_listaIzvrsenihAktivnosti[i]._ocjena > _listaIzvrsenihAktivnosti[i + 1]._ocjena) {
+						swap(_listaIzvrsenihAktivnosti[i], _listaIzvrsenihAktivnosti[i + 1]);
+						iz = 0;
+					}
+			}n -= 1;
+		} while (n > 1 && iz == 0);
 	}
 	/* Karate pojas zahtijeva uspjesnu realizaciju svih planiranih aktivnosti, a one se za jedan povecavaju sa svakim novim pojasom, npr.
 	zuti pojas: 1 x tehnika, 1 x kata, 1 x borba;	narandzasti pojas: 2 x tehnika, 2 x kata, 2 x borba; i td...
-	Funkcija vraca false u slucaju da: su kandidatu u listu aktivnosti evidentirane tri negativno ocijenjene identicne vrste aktivnosti
+	Funkcija vraca false u slucaju da: su kandidatu u listu aktivnosti evidentirane tri negativno ocijenjene identicne vrste aktivnosti 
 	(npr. tri negativne ocjene iz borbi), onda se taj pojas ne moze smatrati uspjesno stecenim
-	i, te ukoliko nedostaje bilo koja od aktivnosti zahtijevanih u okviru tog pojasa. Ukoliko je kandidat uspjesno realizovao sve aktivnost,
+	i, te ukoliko nedostaje bilo koja od aktivnosti zahtijevanih u okviru tog pojasa. Ukoliko je kandidat uspjesno realizovao sve aktivnost, 
 	datum polaganja se postavlja na datum posljednje uspjesno realizovane aktivnosti*/
+
 	bool DaLiJePolozen() {
-		if (_trenutnoIzvrsenihAktivnosti == 0)return false;
-		int brojac[3] = { 0 }, neg[3] = { 0 };
-		for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++)
+		if (_trenutnoIzvrsenihAktivnosti <= 0 || _listaIzvrsenihAktivnosti==nullptr)
+			return false;
+		int brojacUspjesnih[3] = { 0 }, brojacNeg[3] = { 0 };
+		for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++) {
 			if (_listaIzvrsenihAktivnosti[i]._ocjena > 5)
-				brojac[*_listaIzvrsenihAktivnosti[i]._vrsta]++;
-			else neg[*_listaIzvrsenihAktivnosti[i]._vrsta]++;
-
-			int x = (int)_pojas + 1;
-
-			for (int i = 0; i < _trenutnoIzvrsenihAktivnosti; i++) {
-				if (brojac[i] < x)return false;
-				if (neg[i] > 2)return false;
+				brojacUspjesnih[*_listaIzvrsenihAktivnosti[i]._vrsta]++;
+			else
+				brojacNeg[*_listaIzvrsenihAktivnosti[i]._vrsta]++;
+		}
+		if (brojacNeg[0] >= 3 || brojacNeg[1] >= 3 || brojacNeg[2] >= 3)
+			return false;
+		for (int i = 0; i < 3; i++)
+			if (brojacUspjesnih[i] < ((int)_pojas + 1))
+				return false;
+		int poslPol;
+		for(int i=_trenutnoIzvrsenihAktivnosti-1;i>=0;i--)
+			if (_listaIzvrsenihAktivnosti[i]._ocjena > 5) {
+				poslPol = i;
+				break;
 			}
-			_datumPolaganja = new Datum;
-			int posl;
-			for (int i = _trenutnoIzvrsenihAktivnosti - 2; i >= 0; i--)
-				if (_listaIzvrsenihAktivnosti[i]._ocjena > 5) {
-					posl = i;
-					break;
-				}
-			_datumPolaganja->Unos(*_listaIzvrsenihAktivnosti[posl]._datumIzvrsenja._dan, *_listaIzvrsenihAktivnosti[posl]._datumIzvrsenja._mjesec, *_listaIzvrsenihAktivnosti[posl]._datumIzvrsenja._godina);
-			return true;
-	}
-	/*Funkcija vraca prosjecnu ocjenu svih uspjesno realizovanih aktivnosti koja u nazivu ili opisu sadrze vrijednost primljenog parametra. 
+		_datumPolaganja = new Datum;
+		_datumPolaganja->Unos(*_listaIzvrsenihAktivnosti[poslPol]._datumIzvrsenja._dan, *_listaIzvrsenihAktivnosti[poslPol]._datumIzvrsenja._mjesec, *_listaIzvrsenihAktivnosti[poslPol]._datumIzvrsenja._godina);
+		return true;
+} 
+	/*Funkcija vraca prosjecnu ocjenu svih uspjesno realizovanih aktivnosti koja u nazivu ili opisu sadrze vrijednost primljenog parametra.
 	Ukoliko smatrate da je potrebno, mozete dodati i druge parametre za potrebe implementacije ove funkcije*/
 
-	int PretragaRekrzivno(const char *p,int z=0,int i=0,int j=0) {
-		if (z == _trenutnoIzvrsenihAktivnosti)return i /= j;
-		if (_listaIzvrsenihAktivnosti[z]._ocjena > 5) PretragaRekrzivno(p,z+1, i + _listaIzvrsenihAktivnosti[z]._ocjena, j + 1);
-		else PretragaRekrzivno(p, z + 1, i, j);
+	float PretragaRekrzivno(const char *parametar=nullptr,int i=0) {
+		if (parametar == nullptr || _datumPolaganja == nullptr || i>=_trenutnoIzvrsenihAktivnosti || _trenutnoIzvrsenihAktivnosti<=0)
+			return 0;
+		
+		if (_listaIzvrsenihAktivnosti[i]._ocjena > 5)
+			return (float)(_listaIzvrsenihAktivnosti[i]._ocjena / (((int)_pojas + 1)*3)) + PretragaRekrzivno(parametar, i + 1);
+		else return PretragaRekrzivno(parametar, i + 1);
 	}
 };
 
 struct Kandidat {
 	char * _imePrezime;
 	shared_ptr<KaratePojas> _pojasevi[6];
-	void Unos(const char * imePrezime) {
+	void Unos(const char * imePrezime = nullptr) {
+		if (imePrezime == nullptr)
+			return;
 		int size = strlen(imePrezime) + 1;
 		_imePrezime = new char[size];
 		strcpy_s(_imePrezime, size, imePrezime);
@@ -195,8 +212,9 @@ struct Kandidat {
 			_pojasevi[i] = nullptr;
 	}
 	void Dealociraj() {
-		delete[] _imePrezime; _imePrezime = nullptr;
-
+		if (_imePrezime != nullptr)
+			delete[] _imePrezime;
+		_imePrezime = nullptr;
 		for (size_t i = 0; i < 6; i++)
 			if (_pojasevi[i] != nullptr) {
 				_pojasevi[i]->Dealociraj();
@@ -205,8 +223,10 @@ struct Kandidat {
 			}
 	}
 	void Ispis() {
-		cout << "Ime i prezime: " << _imePrezime << endl;
-		cout << "---> Lista izvrsenih aktivnosti <----\n";
+		if (_imePrezime != nullptr)
+			cout << _imePrezime << endl;
+		else
+			cout << " PRAZNO\n";
 		for (size_t i = 0; i < 6; i++)
 			if (_pojasevi[i] != nullptr)
 				_pojasevi[i]->Ispis();
@@ -216,45 +236,72 @@ struct Kandidat {
 	narandzasti. Za provjeru lokacije (unutar funkcije DodajPojas) na koju ce se dodati novi karate pojas, te da li su nizi pojasevi prethodno
 	dodani koristiti lambda funkciju.
 	*/
-	bool DodajPojas(KaratePojas kp) {
-		if (kp._pojas == 0) {
-			_pojasevi[0] = make_shared<KaratePojas>();
-			_pojasevi[0]->Unos(kp._pojas);
-			for (int i = 0; i < kp._trenutnoIzvrsenihAktivnosti; i++)
-				_pojasevi[0]->DodajIzvrsenuAktivnost(&kp._listaIzvrsenihAktivnosti[i]);
-			_pojasevi[0]->DaLiJePolozen();
-			return true;
-		}
-		int noReq = kp._pojas;
-		noReq -= 1;
-		for (int i = 5; i >= 0; i--)
-			if (_pojasevi[i]!=nullptr )
-				if ((int)_pojasevi[i]->_pojas == noReq)noReq -= 1;
 
-		if (noReq > -1)return false;
-		_pojasevi[kp._pojas]=make_shared<KaratePojas>();
-		_pojasevi[kp._pojas]->Unos(kp._pojas);
-		for (int i = 0; i < kp._trenutnoIzvrsenihAktivnosti; i++)
-			_pojasevi[0]->DodajIzvrsenuAktivnost(&kp._listaIzvrsenihAktivnosti[i]);
-		_pojasevi[0]->DaLiJePolozen();
+	bool DodajPojas(KaratePojas kp) {
+		auto f = [=]() {
+			int potrebno = (int)kp._pojas;
+			int *uslov = new int[potrebno] { 0 };
+			for (int i = 0; i < 6; i++)
+				if (_pojasevi[i] != nullptr && _pojasevi[i]->_pojas < potrebno)
+					uslov[_pojasevi[i]->_pojas]++;
+			for (int i = 0; i < potrebno; i++)
+				if (uslov[i] <= 0)
+					return false;
+			return true;
+		};
+		int slobodan = 0;
+		if (_pojasevi[0] != nullptr) {
+			while (_pojasevi[slobodan] != nullptr && slobodan < 6) {
+				if (_pojasevi[slobodan + 1] == nullptr) {
+					slobodan += 1;
+					break;
+				}
+				slobodan++;
+			}
+		}
+		if (slobodan > 0)
+			if (!f())
+				return false;
+		if (slobodan >= 6)
+		{
+			cout << "Nema mjesta za novi pojas..\n";
+			return false;
+		}
+		_pojasevi[slobodan] = make_shared<KaratePojas>();
+		_pojasevi[slobodan]->Unos(kp._pojas);
+		if (kp._trenutnoIzvrsenihAktivnosti > 0)
+			for (int i = 0; i < kp._trenutnoIzvrsenihAktivnosti; i++)
+				_pojasevi[slobodan]->DodajIzvrsenuAktivnost(&kp._listaIzvrsenihAktivnosti[i]);
+		_pojasevi[slobodan]->DaLiJePolozen();
 		return true;
 	}
 	//Funkcija GetNajbolji vraca par koji sadrzi oznaku i prosjecnu ocjenu (uspjesno okoncanih aktivnosti) pojasa sa najvecim prosjekom
+
+
 	pair<Pojas, float>GetNajbolji() {
-		int brp = 0;
+		int x = 0, ima = 0;
 		for (int i = 0; i < 6; i++)
-			if (_pojasevi[i] != nullptr)brp++;
-		float *prosjeci = new float[brp];
-		for (int i = 0; i < brp; i++)prosjeci[i] = 0;
-		for (int i = 0; i < brp; i++) {
-			for (int j = 0; j < _pojasevi[i]->_trenutnoIzvrsenihAktivnosti; i++)prosjeci[i] += _pojasevi[i]->_listaIzvrsenihAktivnosti[j]._ocjena;
-			(float)prosjeci[i] /= _pojasevi[i]->_trenutnoIzvrsenihAktivnosti;
-		}
+			if (_pojasevi[i] != nullptr)
+				ima++;
+
+
+		if (ima <= 0)
+			return make_pair(Zuti, (float)0.0);
+		float *prosjeci = new float[ima] {0};
+		for (int i = 0; i < 6; i++)
+			if (_pojasevi[i] != nullptr)
+				prosjeci[i] = _pojasevi[i]->PretragaRekrzivno(" ");
 		int naj = 0;
-		for (int i = 1; i < brp; i++)if (prosjeci[i] > prosjeci[naj])naj = i;
-		return make_pair(_pojasevi[naj]->_pojas, prosjeci[naj]);
+		for (int i = 1; i < ima; i++)
+			if (prosjeci[i] > prosjeci[naj])
+				naj = i;
+		float temp = prosjeci[naj];
+		delete[] prosjeci; prosjeci = nullptr;
+		Pojas p = _pojasevi[naj]->_pojas;
+		return make_pair(p, temp);
 	}
 };
+
 
 void main() {
 
@@ -278,6 +325,7 @@ void main() {
 	pojasZeleni.Unos(Zeleni);
 	pojasNarandzasti.Unos(Narandzasti);
 
+	
 	if (pojasZuti.DodajIzvrsenuAktivnost(&aktivnost1))
 		cout << "Aktivnost uspjesno dodana!" << endl;
 	if (pojasZuti.DodajIzvrsenuAktivnost(&aktivnost2))
@@ -288,41 +336,33 @@ void main() {
 		cout << "Aktivnost uspjesno dodana!" << endl;
 	if (pojasZuti.DodajIzvrsenuAktivnost(&aktivnost5))
 		cout << "Aktivnost uspjesno dodana!" << endl;
-
 	//Koristeci neki od obradjenih algoritama, po ocjeni sortirati aktivnosti u okviru odredjenog pojasa
 	pojasZuti.Sortiraj();
-
-
-
+	
 	if (pojasZuti.DaLiJePolozen())
 		pojasZuti.Ispis();
-
 	cout << "Prosjecna ocjena za zuti pojas -> " << pojasZuti.PretragaRekrzivno("pojas") << endl;
 
 	//ispisuje sve dostupne podatke o pojasu
 	pojasZuti.Ispis();
-
 	Kandidat jasmin;
 	jasmin.Unos("Jasmin Azemovic");
-
+	
 	if (jasmin.DodajPojas(pojasZuti))
 		cout << "Pojas uspjesno dodan!" << endl;
 	if (jasmin.DodajPojas(pojasZeleni))//prethodno je trebao biti dodan narandzasti pojas
 		cout << "Pojas uspjesno dodan!" << endl;
 	if (jasmin.DodajPojas(pojasNarandzasti))
 		cout << "Pojas uspjesno dodan!" << endl;
-
+	
 	float prosjek = 0;
-	Pojas ppojas;
-	//Funkcija GetNajbolji vraca par koji sadrzi oznaku i prosjecnu ocjenu (uspjesno okoncanih aktivnosti) pojasa sa najvecim prosjekom
-	tie(ppojas, prosjek) = jasmin.GetNajbolji();
-	cout << "Najbolji rezultat od " << prosjek << " je ostvaren tokom stjecanja pojasa " << pojas[ppojas] << endl;
-
+	Pojas pojass;
+	tie(pojass, prosjek) = jasmin.GetNajbolji();
+	cout << "Najbolji rezultat od " << prosjek << " je ostvaren tokom stjecanja pojasa " << pojas[pojass] << endl;
 
 	datumPolaganja1.Dealociraj(), datumPolaganja2.Dealociraj(), datumPolaganja3.Dealociraj(), datumPolaganja4.Dealociraj();
 	aktivnost1.Dealociraj(), aktivnost2.Dealociraj(), aktivnost3.Dealociraj(), aktivnost4.Dealociraj(), aktivnost5.Dealociraj();
 	pojasZuti.Dealociraj(), pojasNarandzasti.Dealociraj(), pojasZeleni.Dealociraj();
 	jasmin.Dealociraj();
-
 	system("pause");
 }
