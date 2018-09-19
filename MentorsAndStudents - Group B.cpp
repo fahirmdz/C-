@@ -349,11 +349,11 @@ int main() {
 	//parametri: brojIndeksa, tema
 	multimedijalni.Unos("IB120021", "Multimedijalni informacijski sistem za visoko - obrazovnu ustanovu");
 	ZavrsniRad podrsa_operaterima;
-	podrsa_operaterima.Unos("IB130031", "Sistem za podršku rada kablovskog operatera");
+	podrsa_operaterima.Unos("IB130031", "Sistem za podrÂšku rada kablovskog operatera");
 	ZavrsniRad analiza_sigurnosti;
-	analiza_sigurnosti.Unos("IB140041", "Prakticna analiza sigurnosti bežiènih raèunarskih mreža");
+	analiza_sigurnosti.Unos("IB140041", "Prakticna analiza sigurnosti beÂžiÃ¨nih raÃ¨unarskih mreÂža");
 	ZavrsniRad kriptografija;
-	kriptografija.Unos("IB120021", "Primjena teorije informacija u procesu generisanja kriptografskih kljuèeva");
+	kriptografija.Unos("IB120021", "Primjena teorije informacija u procesu generisanja kriptografskih kljuÃ¨eva");
 
 	/*u zavrsni rad dodaje novo poglavlje i njegov sadrzaj. ukoliko poglavlje vec postoji u zavrsnom radu, funkcija tom poglavlju treba dodati novi sadrzaj i pri tome zadrzi postojeci (izmedju postojeceg i novog sadrzaja se dodaje prazan prostor). u slucaju da poglavlje ne postoji, ono se dodaje zajedno sa sadrzajem*/
 	//parametri: nazivPoglavlja, sadrzajPoglavlja
