@@ -11,6 +11,8 @@ const char * crt = "\n-------------------------------------------\n";
 const int min_polgavlja = 3;
 const int min_karaktera_po_poglavlju = 30;
 const int max_zavrsnih = 30;
+
+
 template<class T>
 int firstFree(T *niz[]) {
 	int x = 0;
@@ -119,16 +121,16 @@ struct ZavrsniRad {
 		else cout << endl << "Ocjena: NEOCENJEN\n";
 		cout << endl << endl;
 	}
-	/*u zavrsni rad dodaje novo poglavlje i njegov sadrzaj. ukoliko poglavlje vec postoji u zavrsnom radu, funkcija tom poglavlju treba 
+	/*u zavrsni rad dodaje novo poglavlje i njegov sadrzaj. ukoliko poglavlje vec postoji u zavrsnom radu, funkcija tom poglavlju treba
 	dodati novi sadrzaj i pri tome zadrzi postojeci (izmedju postojeceg i novog sadrzaja se dodaje prazan prostor). u slucaju da poglavlje
 	ne postoji, ono se dodaje zajedno sa sadrzajem*/
 	//parametri: nazivPoglavlja, sadrzajPoglavlja
 
-	void DodajPoglavlje(const char *tema=nullptr,const char *sadrzaj=nullptr) {
+	void DodajPoglavlje(const char *tema = nullptr, const char *sadrzaj = nullptr) {
 		if (tema == nullptr || sadrzaj == nullptr)
 			return;
 		int t = -1;
-		if (_trenutnoPoglavlja > 0 && _poglavljaRada!=nullptr) {
+		if (_trenutnoPoglavlja > 0 && _poglavljaRada != nullptr) {
 			for (int i = 0; i < _trenutnoPoglavlja; i++)
 				if (strcmp(_poglavljaRada[i]._naslov, tema) == 0) {
 					t = i;
@@ -187,7 +189,7 @@ struct Nastavnik {
 	char * _imePrezime;
 	ZavrsniRad * _teme[max_zavrsnih] = { nullptr };
 
-	void Unos(const char * imePrezime=nullptr) {
+	void Unos(const char * imePrezime = nullptr) {
 		if (imePrezime == nullptr)
 			return;
 		_imePrezime = AlocirajNizKaraktera(imePrezime);
@@ -234,14 +236,7 @@ struct Nastavnik {
 					return false;
 				}
 		}
-		_teme[sl] = new ZavrsniRad;
-		_teme[sl]->Unos(zr._brojIndeksa, zr._tema);
-		if (zr._trenutnoPoglavlja > 0 && zr._poglavljaRada!=nullptr)
-			for (int i = 0; i < zr._trenutnoPoglavlja; i++) {
-				_teme[sl]->DodajPoglavlje(zr._poglavljaRada[i]._naslov, zr._poglavljaRada[i]._sadrzaj);
-				if (zr._poglavljaRada[i]._ocjena > 0)
-					_teme[sl]->_poglavljaRada[i].OcijeniPoglavlje(zr._poglavljaRada[i]._ocjena);
-			}
+		_teme[sl] = new ZavrsniRad(zr);
 		return true;
 	}
 	/*funkcija ZakaziOdbranuRada ima zadatak da studentu sa proslijedjenim brojem indeksa zakaze odbranu zavrsnog rada sto podrazumijeva
@@ -252,10 +247,10 @@ struct Nastavnik {
 	3. svako poglavlje mora biti prihvaceno/odobreno
 	ukoliko su zadovoljeni prethodni kriteriji, izracunava se konacna ocjena rada (prosjek ocjena svih poglavlja), postavlja datum odbrane rada
 	i vraca pokazivac na rad kome je zakazana odbrana.
-	u slucaju da student sa primljenim brojem indeksa nije prijavio zavrsni rad ili neki od postavljenih kriterija nije zadovoljen, funkcija vraca 
+	u slucaju da student sa primljenim brojem indeksa nije prijavio zavrsni rad ili neki od postavljenih kriterija nije zadovoljen, funkcija vraca
 	nullptr.
 	*/
-	ZavrsniRad *ZakaziOdbranuRada(const char *brojIndeksa,const char *datum) {
+	ZavrsniRad *ZakaziOdbranuRada(const char *brojIndeksa, const char *datum) {
 		if (brojIndeksa == nullptr || datum == nullptr)
 			return nullptr;
 
@@ -271,8 +266,8 @@ struct Nastavnik {
 			cout << "Student sa unijetim broj indeksa nema prijavljen rad..\n";
 			return nullptr;
 		}
-		
-		if (_teme[t]->_trenutnoPoglavlja < min_polgavlja || _teme[t]->_trenutnoPoglavlja<=0)
+
+		if (_teme[t]->_trenutnoPoglavlja < min_polgavlja || _teme[t]->_trenutnoPoglavlja <= 0)
 			return nullptr;
 		for (int i = 0; i < _teme[t]->_trenutnoPoglavlja; i++)
 			if (strlen(_teme[t]->_poglavljaRada[i]._sadrzaj) < min_karaktera_po_poglavlju || !_teme[t]->_poglavljaRada[i]._prihvaceno)
@@ -320,7 +315,7 @@ tuple<char*, float, float>PronadjiNajStudenta(Nastavnik *niz[], int max, float p
 
 	int student = -1;
 	for (int i = 0; i < max_zavrsnih; i++)
-		if(niz[najmMent]->_teme[i]!=nullptr)
+		if (niz[najmMent]->_teme[i] != nullptr)
 			if (niz[najmMent]->_teme[i]->_konacnaOcjena > prosjek) {
 				student = i;
 				break;
@@ -328,28 +323,28 @@ tuple<char*, float, float>PronadjiNajStudenta(Nastavnik *niz[], int max, float p
 	if (student == -1)
 		return make_tuple(nullptr, NULL, NULL);
 	return make_tuple(niz[najmMent]->_teme[student]->_brojIndeksa, prosjeci[najmMent], niz[najmMent]->_teme[student]->_konacnaOcjena);
-	
+
 }
 int main() {
 	const int max = 2;
 	Nastavnik * nastavnici[max];
 
-	nastavnici[0] = new Nastavnik;    
+	nastavnici[0] = new Nastavnik;
 	nastavnici[0]->Unos("Denis Music");
-	nastavnici[1] = new Nastavnik;     
+	nastavnici[1] = new Nastavnik;
 	nastavnici[1]->Unos("Emina Junuz");
 
 	ZavrsniRad multimedijalni;
 	//parametri: brojIndeksa, tema
 	multimedijalni.Unos("IB120021", "Multimedijalni informacijski sistem za visoko - obrazovnu ustanovu");
 	ZavrsniRad podrsa_operaterima;
-	podrsa_operaterima.Unos("IB130031", "Sistem za podršku rada kablovskog operatera");
+	podrsa_operaterima.Unos("IB130031", "Sistem za podrÂšku rada kablovskog operatera");
 	ZavrsniRad analiza_sigurnosti;
-	analiza_sigurnosti.Unos("IB140041", "Prakticna analiza sigurnosti bežiènih raèunarskih mreža");
+	analiza_sigurnosti.Unos("IB140041", "Prakticna analiza sigurnosti beÂžiÃ¨nih raÃ¨unarskih mreÂža");
 	ZavrsniRad kriptografija;
-	kriptografija.Unos("IB120021", "Primjena teorije informacija u procesu generisanja kriptografskih kljuèeva");
+	kriptografija.Unos("IB120021", "Primjena teorije informacija u procesu generisanja kriptografskih kljuÃ¨eva");
 
-	
+
 	multimedijalni.DodajPoglavlje("Uvod", "U ovom poglavlju ce biti rijeci");
 	multimedijalni.DodajPoglavlje("Uvod", "o multimedijalnim sistemima koji se danas koriste");
 	multimedijalni.DodajPoglavlje("Uvod", "u savremenom poslovanju");
@@ -361,11 +356,11 @@ int main() {
 	multimedijalni.OcijeniPoglavlje("Vrste multimedijalnih sistema", 6);
 	multimedijalni.OcijeniPoglavlje("Teorija multimedije", 10);
 
-	
 
-	 //brojIndeksa, zavrsniRad
-		if (nastavnici[0]->DodajZavrsniRad(multimedijalni))
-			cout << "Zavrsni rad uspjesno dodat!" << endl;
+
+	//brojIndeksa, zavrsniRad
+	if (nastavnici[0]->DodajZavrsniRad(multimedijalni))
+		cout << "Zavrsni rad uspjesno dodat!" << endl;
 	if (nastavnici[0]->DodajZavrsniRad(podrsa_operaterima))
 		cout << "Zavrsni rad uspjesno dodat!" << endl;
 	if (!nastavnici[0]->DodajZavrsniRad(podrsa_operaterima))//dupliranje rada, onemoguciti dodavanje
@@ -375,7 +370,7 @@ int main() {
 	if (nastavnici[1]->DodajZavrsniRad(analiza_sigurnosti))
 		cout << "Zavrsni rad uspjesno dodat!" << endl;
 
-	
+
 	//paramteri: brojIndeksa, datumOdbrane
 	ZavrsniRad * zr1 = nastavnici[0]->ZakaziOdbranuRada("IB120021", "25.09.2018");
 	if (zr1 != nullptr)
@@ -387,7 +382,7 @@ int main() {
 	nastavnici[0]->Ispis();
 	nastavnici[1]->Ispis();
 
-	
+
 	float prosjekStudenta = 0, prosjekMentora = 0;
 	char * indeksStudenta;
 	//parametri PronadjiNajStudenta: nastavnici, brojNastavnika, minimalnaKonacnaOcjena
