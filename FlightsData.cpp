@@ -45,7 +45,7 @@ struct Let {
 	char * _destinacija;
 	Rezervacija * _rezervacije;
 	int _brojMjesta; //maksimalan broj mjesta na letu
-	float _brojMilja; //odnosi se na duzinu leta – broj predjenih milja
+	float _brojMilja; //odnosi se na duzinu leta â€“ broj predjenih milja
 	float _cijenaKarte;
 	void Unos(Kompanija kompanija, char * pocetak, char * destinacija, int brojMjesta, float brojMilja, float cijena) {
 		_kompanija = new Kompanija(kompanija);
@@ -151,12 +151,12 @@ void main() {
 	letovi[2].Unos(Pegasus, "Sarajevo", "Doha", 30, 6500, 400);
 	letovi[3].Unos(AustrianAirlines, "Sarajevo", "Bec", 30, 1700, 190);
 	Putnik fahir, dzemil, uros, kerim, ali, ifo;
-	fahir.Unos("Fahir Mumdzic");
-	dzemil.Unos("Dzemil Gusinac");
-	uros.Unos("Uros Milanovic");
-	kerim.Unos("Abdul Kerim Jasarevic");
-	ali.Unos("Ali Kijevcanin");
-	ifo.Unos("Nazif Susevic");
+	fahir.Unos("Fahir ");
+	dzemil.Unos("Dzemil");
+	uros.Unos("Uros");
+	kerim.Unos("Abdul ");
+	ali.Unos("Ali ");
+	ifo.Unos("Nazif");
 	if (letovi[0].AddRezervaciju(&fahir))cout << "Putnik uspjesno dodan..\n";
 	if (letovi[0].AddRezervaciju(&dzemil))cout << "Putnik uspjesno dodan..\n";
 	if (letovi[0].AddRezervaciju(&uros))cout << "Putnik uspjesno dodan..\n";
